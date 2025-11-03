@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController2D : MonoBehaviour
@@ -7,7 +8,11 @@ public class PlayerController2D : MonoBehaviour
     public LayerMask groundLayer;
     public Transform groundCheck;
     public float groundCheckRadius = 0.1f;
-    public bool requireGroundToJump = true; // se quiser testar no ar, põe false
+
+    [Header("Movimento opcional")]
+    public float baseMoveSpeed = 0f;   // deixa 0 pro player ficar parado
+    private float currentMoveSpeed;
+    private float boostTimer = 0f;
 
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -15,32 +20,43 @@ public class PlayerController2D : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        currentMoveSpeed = baseMoveSpeed;
     }
 
     void Update()
     {
-        // 1) verificar se está no chão
+        // checar chão
         if (groundCheck != null)
-        {
             isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        }
         else
-        {
-            isGrounded = true; // se esquecer de setar, deixa pular
-        }
+            isGrounded = true;
 
-        // 2) entrada de pulo (qualquer um desses funciona)
-        bool jumpPressed =
-            Input.GetKeyDown(KeyCode.Space) ||
-            Input.GetKeyDown(KeyCode.W) ||
-            Input.GetKeyDown(KeyCode.UpArrow);
-
-        if (jumpPressed)
+        // pulo
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            if (!requireGroundToJump || isGrounded)
-            {
+            if (isGrounded)
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            }
         }
+
+        // contagem do boost
+        if (boostTimer > 0)
+        {
+            boostTimer -= Time.deltaTime;
+            if (boostTimer <= 0)
+                currentMoveSpeed = baseMoveSpeed;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+
+    }
+
+    // 🍌 banana usa isso
+    public void ApplySpeedBoost(float newSpeed, float duration)
+    {
+        currentMoveSpeed = newSpeed;
+        boostTimer = duration;
     }
 }

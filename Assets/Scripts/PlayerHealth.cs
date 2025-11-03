@@ -13,44 +13,33 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         currentShields = maxShields;
 
-        // se já existir o GameManager na cena, atualiza HUD
         if (GameManager.Instance != null)
             GameManager.Instance.UpdateHUD();
     }
 
     public void TakeDamage(int amount)
     {
-        // primeiro gasta escudo
         if (currentShields > 0)
-        {
             currentShields -= amount;
-        }
         else
-        {
             currentHealth -= amount;
-        }
 
         if (GameManager.Instance != null)
             GameManager.Instance.UpdateHUD();
 
         if (currentHealth <= 0)
-        {
-            if (GameManager.Instance != null)
-                GameManager.Instance.GameOver();
-        }
+            GameManager.Instance.GameOver();
     }
 
     public void Heal(int amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        if (GameManager.Instance != null)
-            GameManager.Instance.UpdateHUD();
+        GameManager.Instance.UpdateHUD();
     }
 
     public void AddShield(int amount)
     {
         currentShields = Mathf.Min(currentShields + amount, maxShields);
-        if (GameManager.Instance != null)
-            GameManager.Instance.UpdateHUD();
+        GameManager.Instance.UpdateHUD();
     }
 }
