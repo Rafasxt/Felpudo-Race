@@ -102,9 +102,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5799139699532763567}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: df3d0ec45939f6c4990358771eca5b18, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6019636a68f5a7f469d089d22fb32f01, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -201,5 +201,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffc46377ea948874aa007210af253c6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrelEnemy
-  rollForce: 5
+  rollSpeed: 2.5
   damage: 1

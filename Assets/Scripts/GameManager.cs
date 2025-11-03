@@ -10,12 +10,12 @@ public class GameManager : MonoBehaviour
     public float gameDuration = 120f;
 
     [Header("HUD (imagens de vida e escudo)")]
-    public Image[] heartImages;   // arrasta Heart1, Heart2, Heart3
-    public Image[] shieldImages;  // arrasta Shield1, Shield2, Shield3
+    public Image[] heartImages;
+    public Image[] shieldImages;
 
     [Header("Painéis de fim de jogo")]
-    public GameObject winPanel;   // painel de vitória
-    public GameObject losePanel;  // painel de derrota
+    public GameObject winPanel;
+    public GameObject losePanel;
 
     private float currentTime;
     private bool gameEnded = false;
@@ -32,8 +32,7 @@ public class GameManager : MonoBehaviour
         if (winPanel != null) winPanel.SetActive(false);
         if (losePanel != null) losePanel.SetActive(false);
 
-        // se o player já existir na cena, já atualiza HUD
-        PlayerHealth ph = FindObjectOfType<PlayerHealth>();
+        PlayerHealth ph = FindFirstObjectByType<PlayerHealth>();
         if (ph != null)
             UpdateHUD(ph);
     }
@@ -42,7 +41,6 @@ public class GameManager : MonoBehaviour
     {
         if (gameEnded) return;
 
-        // contador regressivo
         currentTime -= Time.deltaTime;
         if (currentTime <= 0f)
         {
@@ -50,67 +48,52 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ====== HUD ======
-
-    // versão sem parâmetro (pra manter compatibilidade com seu PlayerHealth atual)
+    // ===== HUD =====
     public void UpdateHUD()
     {
-        PlayerHealth ph = FindObjectOfType<PlayerHealth>();
+        PlayerHealth ph = FindFirstObjectByType<PlayerHealth>();
         if (ph != null)
             UpdateHUD(ph);
     }
 
-    // versão com parâmetro (melhor)
     public void UpdateHUD(PlayerHealth player)
     {
-        // vidas
         if (heartImages != null && heartImages.Length > 0)
         {
             for (int i = 0; i < heartImages.Length; i++)
-            {
                 heartImages[i].enabled = i < player.currentHealth;
-            }
         }
 
-        // escudos
         if (shieldImages != null && shieldImages.Length > 0)
         {
             for (int i = 0; i < shieldImages.Length; i++)
-            {
                 shieldImages[i].enabled = i < player.currentShields;
-            }
         }
     }
 
-    // ====== DERROTA ======
+    // ===== DERROTA =====
     public void GameOver()
     {
         if (gameEnded) return;
         gameEnded = true;
 
         Time.timeScale = 0f;
-
         if (losePanel != null)
             losePanel.SetActive(true);
-
-        Debug.Log("💀 GAME OVER");
     }
 
-    // ====== VITÓRIA ======
+    // ===== VITÓRIA =====
     public void Win()
     {
         if (gameEnded) return;
         gameEnded = true;
 
         Time.timeScale = 0f;
-
         if (winPanel != null)
             winPanel.SetActive(true);
-
-        Debug.Log("🏆 VITÓRIA");
     }
 
-    // ====== REINICIAR ======
+    // ===== REINICIAR =====
     public void Restart()
     {
         Time.timeScale = 1f;
