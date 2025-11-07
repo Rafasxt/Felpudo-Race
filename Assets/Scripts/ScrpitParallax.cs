@@ -5,22 +5,22 @@ public class Parallax : MonoBehaviour
     private Material mat;
     private float distance;
 
-    // Controla a velocidade do deslocamento da textura
     [Range(0f, 5f)]
     public float speed = 0.5f;
 
     void Start()
     {
-        // Pega o material do Renderer (SpriteRenderer ou MeshRenderer)
         mat = GetComponent<Renderer>().material;
     }
 
     void Update()
     {
-        // Calcula deslocamento com base no tempo
-        distance += Time.deltaTime * speed;
+        
+        float mult = (GameManager.Instance != null) ? GameManager.Instance.globalSpeed : 1f;
 
-        // Aplica deslocamento no eixo X (direita → esquerda)
+        distance += Time.deltaTime * speed * mult;
+
+        
         mat.SetTextureOffset("_MainTex", Vector2.right * distance);
     }
 }

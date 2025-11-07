@@ -4,7 +4,7 @@ public class ShowBounds : MonoBehaviour
 {
     void Start()
     {
-        // tenta pegar SpriteRenderer
+        
         var sr = GetComponent<SpriteRenderer>();
         if (sr != null)
         {
@@ -13,7 +13,7 @@ public class ShowBounds : MonoBehaviour
             return;
         }
 
-        // se não for SpriteRenderer, tenta qualquer Renderer (MeshRenderer, etc.)
+        
         var rend = GetComponent<Renderer>();
         if (rend != null)
         {
