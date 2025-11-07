@@ -1,29 +1,47 @@
-using UnityEngine;
-
+﻿using UnityEngine;
 public class SnailSpawner : MonoBehaviour
 {
     public GameObject snailPrefab;
-    public float minInterval = 3f;
-    public float maxInterval = 6f;
 
-    float nextTime;
+    [Header("Tempo")]
+    public float minSpawnTime = 2.4f;
+    public float maxSpawnTime = 4.4f;
 
-    void Start()
-    {
-        SetNext();
-    }
+    [Header("Chão")]
+    public float yGround = -4.0f;
 
+    [Header("Anti-grude")]
+    public float separationRadius = 2.4f; 
+    public LayerMask enemyLayer;         
+
+    float timer;
+
+    void Start() { timer = Random.Range(minSpawnTime, maxSpawnTime); }
     void Update()
     {
-        if (Time.time >= nextTime)
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
         {
-            Instantiate(snailPrefab, transform.position, Quaternion.identity);
-            SetNext();
+            TrySpawn();
+            timer = Random.Range(minSpawnTime, maxSpawnTime);
         }
     }
 
-    void SetNext()
+    void TrySpawn()
     {
-        nextTime = Time.time + Random.Range(minInterval, maxInterval);
+        if (!snailPrefab) return;
+
+        Vector3 pos = transform.position; pos.y = yGround;
+
+        if (Physics2D.OverlapCircle(pos, separationRadius, enemyLayer) != null) return;
+
+        Instantiate(snailPrefab, pos, Quaternion.identity);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        var p = transform.position; p.y = yGround;
+        Gizmos.DrawWireSphere(p, separationRadius);
     }
 }

@@ -1,46 +1,56 @@
 using UnityEngine;
-
 public class FruitSpawner : MonoBehaviour
 {
     public GameObject bananaPrefab;
     public GameObject watermelonPrefab;
+    public Transform spawnPoint; 
 
-    public float minInterval = 4f;
-    public float maxInterval = 8f;
+    [Header("Frequência")]
+    public float minSpawnTime = 1.5f;
+    public float maxSpawnTime = 2.8f;
 
-    public float spawnY = -2.5f;   // altura do chão
-    public float fixedX = 10f;     // sempre nasce na direita
+    [Header("Tamanho frutas")]
+    public float fruitTargetWorldHeight = 0.9f;
 
-    private float nextTime;
+    [Header("Anti-grude")]
+    public float separationRadius = 2.0f;
+    public LayerMask avoidLayers; 
 
-    void Start()
-    {
-        ScheduleNext();
-    }
+    float timer;
 
+    void Start() { timer = Random.Range(minSpawnTime, maxSpawnTime); }
     void Update()
     {
-        if (Time.time >= nextTime)
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
         {
-            SpawnFruit();
-            ScheduleNext();
+            TrySpawn();
+            timer = Random.Range(minSpawnTime, maxSpawnTime);
         }
     }
 
-    void SpawnFruit()
+    void TrySpawn()
     {
-        if (bananaPrefab == null && watermelonPrefab == null) return;
+        if (!bananaPrefab || !watermelonPrefab) return;
 
-        // 50% banana, 50% melancia
-        bool spawnBanana = Random.value > 0.5f;
-        GameObject prefab = spawnBanana ? bananaPrefab : watermelonPrefab;
+        Vector3 pos = (spawnPoint ? spawnPoint.position : transform.position);
 
-        Vector3 pos = new Vector3(fixedX, spawnY, 0);
-        Instantiate(prefab, pos, Quaternion.identity);
-    }
+        if (Physics2D.OverlapCircle(pos, separationRadius, avoidLayers) != null) return;
 
-    void ScheduleNext()
-    {
-        nextTime = Time.time + Random.Range(minInterval, maxInterval);
+        GameObject prefab = (Random.Range(0, 2) == 0) ? bananaPrefab : watermelonPrefab;
+        var go = Instantiate(prefab, pos, Quaternion.identity);
+
+        
+        var sr = go.GetComponentInChildren<SpriteRenderer>();
+        if (sr && sr.sprite)
+        {
+            go.transform.localScale = Vector3.one;
+            float h = sr.bounds.size.y;
+            if (h > 0.0001f)
+            {
+                float k = fruitTargetWorldHeight / h;
+                go.transform.localScale = new Vector3(k, k, 1f);
+            }
+        }
     }
 }

@@ -4,13 +4,16 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController2D : MonoBehaviour
 {
-    public float jumpForce = 5f;
-    public LayerMask groundLayer;
+    [Header("Pulo")]
+    public float jumpForce = 7.5f;   
+
+    [Header("Detecção de chão")]
     public Transform groundCheck;
     public float groundCheckRadius = 0.1f;
+    public LayerMask groundLayer;
 
     [Header("Movimento opcional")]
-    public float baseMoveSpeed = 0f;   // deixa 0 pro player ficar parado
+    public float baseMoveSpeed = 0f;   
     private float currentMoveSpeed;
     private float boostTimer = 0f;
 
@@ -25,35 +28,33 @@ public class PlayerController2D : MonoBehaviour
 
     void Update()
     {
-        // checar chão
+        
         if (groundCheck != null)
             isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         else
             isGrounded = true;
 
-        // pulo
+        
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             if (isGrounded)
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
-        // contagem do boost
-        if (boostTimer > 0)
+        
+        if (boostTimer > 0f)
         {
             boostTimer -= Time.deltaTime;
-            if (boostTimer <= 0)
+            if (boostTimer <= 0f)
                 currentMoveSpeed = baseMoveSpeed;
         }
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-
+        rb.linearVelocity = new Vector2(currentMoveSpeed, rb.linearVelocity.y);
     }
 
-    // 🍌 banana usa isso
     public void ApplySpeedBoost(float newSpeed, float duration)
     {
         currentMoveSpeed = newSpeed;

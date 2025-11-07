@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,13 @@ public class GameManager : MonoBehaviour
     [Header("Painéis de fim de jogo")]
     public GameObject winPanel;
     public GameObject losePanel;
+
+    [Header("Texto de tempo")]
+    public Text txtTempo;   
+
+    [Header("Velocidade global")]
+    public float globalSpeed = 1f;
+    private Coroutine speedRoutine;
 
     private float currentTime;
     private bool gameEnded = false;
@@ -35,6 +43,8 @@ public class GameManager : MonoBehaviour
         PlayerHealth ph = FindFirstObjectByType<PlayerHealth>();
         if (ph != null)
             UpdateHUD(ph);
+
+        UpdateTimeUI();
     }
 
     void Update()
@@ -44,11 +54,25 @@ public class GameManager : MonoBehaviour
         currentTime -= Time.deltaTime;
         if (currentTime <= 0f)
         {
+            currentTime = 0f;
+            UpdateTimeUI();
             Win();
+            return;
         }
+
+        UpdateTimeUI();
     }
 
-    // ===== HUD =====
+    void UpdateTimeUI()
+    {
+        if (txtTempo == null) return;
+
+        int seconds = Mathf.CeilToInt(currentTime);
+        int m = seconds / 60;
+        int s = seconds % 60;
+        txtTempo.text = $"{m:00}:{s:00}";
+    }
+
     public void UpdateHUD()
     {
         PlayerHealth ph = FindFirstObjectByType<PlayerHealth>();
@@ -71,7 +95,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ===== DERROTA =====
     public void GameOver()
     {
         if (gameEnded) return;
@@ -82,7 +105,6 @@ public class GameManager : MonoBehaviour
             losePanel.SetActive(true);
     }
 
-    // ===== VITÓRIA =====
     public void Win()
     {
         if (gameEnded) return;
@@ -93,10 +115,26 @@ public class GameManager : MonoBehaviour
             winPanel.SetActive(true);
     }
 
-    // ===== REINICIAR =====
     public void Restart()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    
+    public void BoostGlobalSpeed(float multiplier, float duration)
+    {
+        if (speedRoutine != null)
+            StopCoroutine(speedRoutine);
+
+        speedRoutine = StartCoroutine(BoostRoutine(multiplier, duration));
+    }
+
+    private IEnumerator BoostRoutine(float multiplier, float duration)
+    {
+        globalSpeed = multiplier;
+        yield return new WaitForSeconds(duration);
+        globalSpeed = 1f;
+        speedRoutine = null;
     }
 }

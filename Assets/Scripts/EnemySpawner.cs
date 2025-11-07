@@ -1,44 +1,59 @@
-using UnityEngine;
-
+ï»¿using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Configuração do Barril")]
     public GameObject barrelPrefab;
-    public float spawnY = 6f;
 
-    [Header("Área de spawn (horizontal)")]
-    public float minX = -2f;
-    public float maxX = 8f;
+    [Header("Tempo")]
+    public float minSpawnTime = 1.6f;
+    public float maxSpawnTime = 3.0f;
 
-    [Header("Velocidade de spawn")]
-    public float minInterval = 0.4f;
-    public float maxInterval = 1.8f;
+    [Header("Faixa de X")]
+    public float minX = 4.8f;
+    public float maxX = 11.5f;
 
-    private float nextSpawnTime;
+    [Header("Y")]
+    public float spawnY = 4.8f;   
+    public float groundY = -4.0f; 
 
-    void Start()
-    {
-        SetNextSpawnTime();
-    }
+    [Header("Anti-grude")]
+    public float separationRadius = 2.4f; 
+    public int maxAttempts = 8;
+    public LayerMask enemyLayer;
 
+    float timer;
+
+    void Start() { timer = Random.Range(minSpawnTime, maxSpawnTime); }
     void Update()
     {
-        if (Time.time >= nextSpawnTime)
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
         {
-            SpawnBarrel();
-            SetNextSpawnTime();
+            TrySpawn();
+            timer = Random.Range(minSpawnTime, maxSpawnTime);
         }
     }
 
-    void SpawnBarrel()
+    void TrySpawn()
     {
-        float randX = Random.Range(minX, maxX);
-        Vector3 spawnPos = new Vector3(randX, spawnY, 0);
-        Instantiate(barrelPrefab, spawnPos, Quaternion.identity);
+        if (!barrelPrefab) return;
+
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            float x = Random.Range(minX, maxX);
+            Vector2 check = new Vector2(x, groundY);
+
+            if (Physics2D.OverlapCircle(check, separationRadius, enemyLayer) != null) continue;
+
+            Instantiate(barrelPrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
+            return;
+        }
     }
 
-    void SetNextSpawnTime()
+    void OnDrawGizmosSelected()
     {
-        nextSpawnTime = Time.time + Random.Range(minInterval, maxInterval);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(new Vector3(minX, spawnY, 0), new Vector3(maxX, spawnY, 0));
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(new Vector3(minX, groundY, 0), new Vector3(maxX, groundY, 0));
     }
 }

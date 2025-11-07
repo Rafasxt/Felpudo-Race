@@ -452,16 +452,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Barril_Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 5799139699532763567, guid: 0986782226bcf6e4ca5c9e0b62f4bc83, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0986782226bcf6e4ca5c9e0b62f4bc83, type: 3}
---- !u!1 &293275618 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5122956432168564940, guid: 55ce5d7e4594a3d46be2d11242e37343, type: 3}
-  m_PrefabInstance: {fileID: 8722715012056055706}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &376254172 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5436373762374339233, guid: 0986782226bcf6e4ca5c9e0b62f4bc83, type: 3}
@@ -877,11 +876,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523783337}
   m_CullTransparentMesh: 1
---- !u!1 &542495375 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2445383380653636272, guid: fb6bc424205af7a46aedcdfb2aebfce8, type: 3}
-  m_PrefabInstance: {fileID: 7450174173332942449}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &603281587
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,7 +1144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 751157947}
   - component: {fileID: 751157948}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemySpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1186,11 +1180,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   barrelPrefab: {fileID: 5799139699532763567, guid: 0986782226bcf6e4ca5c9e0b62f4bc83, type: 3}
-  spawnY: 6
-  minX: -1
-  maxX: 9
-  minInterval: 2.5
-  maxInterval: 4.5
+  minSpawnTime: 1.5
+  maxSpawnTime: 3.5
+  minX: 5
+  maxX: 11.5
+  spawnY: 4.8
+  groundY: -4
+  separationRadius: 3
+  maxAttempts: 6
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 640
 --- !u!1 &1147802156
 GameObject:
   m_ObjectHideFlags: 0
@@ -1382,6 +1382,8 @@ MonoBehaviour:
   - {fileID: 1399730175}
   winPanel: {fileID: 46539565}
   losePanel: {fileID: 1418534907}
+  txtTempo: {fileID: 523783339}
+  globalSpeed: 1
 --- !u!1 &1185121189
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,12 +1910,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daf83da78700ef244902b611d428940a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController2D
-  jumpForce: 5
+  jumpForce: 11
+  groundCheck: {fileID: 748577050}
+  groundCheckRadius: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  groundCheck: {fileID: 748577050}
-  groundCheckRadius: 0.1
   baseMoveSpeed: 0
 --- !u!61 &1312455038
 BoxCollider2D:
@@ -1988,6 +1990,37 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!1 &1350791489
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1350791490}
+  m_Layer: 0
+  m_Name: SpawnPoint_Inimigos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1350791490
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1350791489}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10, y: -4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1363184923
 GameObject:
   m_ObjectHideFlags: 0
@@ -2584,9 +2617,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1764622995}
   - component: {fileID: 1764622996}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FruitSpawner
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2618,12 +2651,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2cb22704072ab54088f55e5bac67a83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FruitSpawner
-  bananaPrefab: {fileID: 542495375}
-  watermelonPrefab: {fileID: 293275618}
-  minInterval: 4
-  maxInterval: 8
-  spawnY: -2.5
-  fixedX: 10
+  bananaPrefab: {fileID: 2445383380653636272, guid: fb6bc424205af7a46aedcdfb2aebfce8, type: 3}
+  watermelonPrefab: {fileID: 5122956432168564940, guid: 55ce5d7e4594a3d46be2d11242e37343, type: 3}
+  spawnPoint: {fileID: 0}
+  minSpawnTime: 4
+  maxSpawnTime: 7
+  fruitTargetWorldHeight: 0.9
+  separationRadius: 2
+  avoidLayers:
+    serializedVersion: 2
+    m_Bits: 640
 --- !u!1 &1886978345
 GameObject:
   m_ObjectHideFlags: 0
@@ -2815,7 +2852,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2023070639}
   - component: {fileID: 2023070640}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SnailSpwaner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2850,8 +2887,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnailSpawner
   snailPrefab: {fileID: 60712922562669874, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
-  minInterval: 3
-  maxInterval: 6
+  minSpawnTime: 2
+  maxSpawnTime: 4
+  yGround: -4
+  separationRadius: 3
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 640
 --- !u!1 &2131745008
 GameObject:
   m_ObjectHideFlags: 0
@@ -2968,6 +3010,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2400326165237281981, guid: 019e12c6eb8d5434e800c7e9c1b6bd44, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2400326165237281981, guid: 019e12c6eb8d5434e800c7e9c1b6bd44, type: 3}
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
@@ -3011,6 +3057,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7225012933165025185, guid: 019e12c6eb8d5434e800c7e9c1b6bd44, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 121538919813052717, guid: 019e12c6eb8d5434e800c7e9c1b6bd44, type: 3}
     m_RemovedGameObjects: []
@@ -3041,10 +3091,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lesmo_Walk
       objectReference: {fileID: 0}
+    - target: {fileID: 60712922562669874, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 231690085489450189, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.32
+      objectReference: {fileID: 0}
     - target: {fileID: 481728832056903306, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 22805949d163fbf48b2fde826a7a2bf2, type: 2}
+    - target: {fileID: 939891126848918692, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3554043744892718811, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.826
@@ -3085,7 +3147,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 5460068069772330031, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6642150313806320633, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6642150313806320633, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
+      propertyPath: m_Size.y
+      value: 0.3
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7820244980460741755, guid: 8b6ff2f66f535b94890a791956f50c6b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -3101,6 +3176,10 @@ PrefabInstance:
     - target: {fileID: 2445383380653636272, guid: fb6bc424205af7a46aedcdfb2aebfce8, type: 3}
       propertyPath: m_Name
       value: Banana_Idle
+      objectReference: {fileID: 0}
+    - target: {fileID: 2445383380653636272, guid: fb6bc424205af7a46aedcdfb2aebfce8, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4183539924026848627, guid: fb6bc424205af7a46aedcdfb2aebfce8, type: 3}
       propertyPath: m_LocalScale.x
@@ -3223,6 +3302,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Watermelon_Idle
       objectReference: {fileID: 0}
+    - target: {fileID: 5122956432168564940, guid: 55ce5d7e4594a3d46be2d11242e37343, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3245,3 +3328,4 @@ SceneRoots:
   - {fileID: 8722715012056055706}
   - {fileID: 7450174173332942449}
   - {fileID: 1764622995}
+  - {fileID: 1350791490}
