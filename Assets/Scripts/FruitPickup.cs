@@ -10,10 +10,10 @@ public enum FruitType
 public class FruitPickup : MonoBehaviour
 {
     public FruitType fruitType;
-    public float moveSpeed = 2.5f;  
+    public float moveSpeed = 2.5f;
 
     [Header("Banana")]
-    public float worldMultiplier = 1.5f; 
+    public float worldMultiplier = 1.5f;
     public float worldDuration = 3f;
 
     [Header("Explosão")]
@@ -33,10 +33,10 @@ public class FruitPickup : MonoBehaviour
     {
         if (picked) return;
 
-        
+
         transform.Translate(Vector2.left * moveSpeed * Time.deltaTime);
 
-        
+
         if (transform.position.x < -12f)
             Destroy(gameObject);
     }
@@ -53,7 +53,7 @@ public class FruitPickup : MonoBehaviour
         if (anim != null && !string.IsNullOrEmpty(explodeTrigger))
             anim.SetTrigger(explodeTrigger);
 
-        
+
         GetComponent<Collider2D>().enabled = false;
 
         Destroy(gameObject, destroyDelay);
@@ -64,15 +64,16 @@ public class FruitPickup : MonoBehaviour
         switch (fruitType)
         {
             case FruitType.Banana:
-                
-                if (GameManager.Instance != null)
-                    GameManager.Instance.BoostGlobalSpeed(worldMultiplier, worldDuration);
 
+                if (GameManager.Instance != null)
+                    GameManager.Instance.ApplyGlobalSpeedMultiplier(1.5f, 5f);
                 
+
+
                 break;
 
             case FruitType.Watermelon:
-                
+
                 var ph = player.GetComponent<PlayerHealth>();
                 if (ph != null)
                 {

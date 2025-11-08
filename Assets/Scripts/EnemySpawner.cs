@@ -1,59 +1,84 @@
 ﻿using UnityEngine;
+
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject barrelPrefab;
+    [Header("Prefab")]
+    public GameObject barrelPrefab;       // Barril (tem que ter Rigidbody2D e cair no chão)
 
-    [Header("Tempo")]
-    public float minSpawnTime = 1.6f;
-    public float maxSpawnTime = 3.0f;
+    [Header("Área de spawn no mundo (X)")]
+    public float xMin = 2f;
+    public float xMax = 9f;
 
-    [Header("Faixa de X")]
-    public float minX = 4.8f;
-    public float maxX = 11.5f;
+    [Header("Altura do drop (Y)")]
+    public float dropY = 3.5f;
 
-    [Header("Y")]
-    public float spawnY = 4.8f;   
-    public float groundY = -4.0f; 
+    [Header("Tempo entre spawns")]
+    public float minDelay = 2.0f;
+    public float maxDelay = 4.0f;
 
-    [Header("Anti-grude")]
-    public float separationRadius = 2.4f; 
-    public int maxAttempts = 8;
-    public LayerMask enemyLayer;
+    [Header("Espaçamento")]
+    public float minDistanceBetween = 1.5f;   // mínimo entre X do último barril
+    public float overlapRadius = 0.4f;        // checagem simples de sobreposição local
+
+    [Header("Opcional")]
+    public Transform spawnPoint;  // se não setar, usa this.transform
 
     float timer;
+    float nextDelay;
+    float lastSpawnX = 9999f;
 
-    void Start() { timer = Random.Range(minSpawnTime, maxSpawnTime); }
+    void OnEnable()
+    {
+        ScheduleNext();
+    }
+
     void Update()
     {
-        timer -= Time.deltaTime;
-        if (timer <= 0f)
+        // NÃO SPAWNAR quando o jogo acaba ou na fase final (últimos 3s)
+        if (GameManager.Instance != null)
+        {
+            if (GameManager.Instance.IsGameEnded()) return;
+            if (GameManager.Instance.IsEndingPhase) return;
+        }
+
+        if (barrelPrefab == null)
+            return;
+
+        timer += Time.deltaTime;
+        if (timer >= nextDelay)
         {
             TrySpawn();
-            timer = Random.Range(minSpawnTime, maxSpawnTime);
+            ScheduleNext();
         }
+    }
+
+    void ScheduleNext()
+    {
+        timer = 0f;
+        nextDelay = Random.Range(minDelay, maxDelay);
     }
 
     void TrySpawn()
     {
-        if (!barrelPrefab) return;
+        Transform sp = spawnPoint != null ? spawnPoint : transform;
 
-        for (int i = 0; i < maxAttempts; i++)
+        // escolhe X dentro do range
+        float x = Random.Range(xMin, xMax);
+        if (Mathf.Abs(x - lastSpawnX) < minDistanceBetween)
         {
-            float x = Random.Range(minX, maxX);
-            Vector2 check = new Vector2(x, groundY);
-
-            if (Physics2D.OverlapCircle(check, separationRadius, enemyLayer) != null) continue;
-
-            Instantiate(barrelPrefab, new Vector3(x, spawnY, 0f), Quaternion.identity);
-            return;
+            // empurra um pouco para evitar grudados
+            x += Mathf.Sign(Random.Range(-1f, 1f)) * minDistanceBetween;
+            x = Mathf.Clamp(x, Mathf.Min(xMin, xMax), Mathf.Max(xMin, xMax));
         }
-    }
 
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(new Vector3(minX, spawnY, 0), new Vector3(maxX, spawnY, 0));
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(new Vector3(minX, groundY, 0), new Vector3(maxX, groundY, 0));
+        Vector3 pos = new Vector3(x, dropY, sp.position.z);
+
+        // anti-sobreposição simples
+        if (Physics2D.OverlapCircle(pos, overlapRadius, LayerMask.GetMask("Enemy")) != null)
+            return;
+
+        GameObject go = Instantiate(barrelPrefab, pos, Quaternion.identity);
+        go.tag = "Enemy"; // garanta que o prefab também tenha essa tag
+        lastSpawnX = x;
     }
 }
