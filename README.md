@@ -55,6 +55,8 @@ Consegue aguentar **2 minutos de caos e emoção**?
 
 ## 🖼️ CAPTURA DE TELA
 
+<img width="1536" height="1024" alt="aa" src="https://github.com/user-attachments/assets/c896449b-5469-4023-a3b3-a5f48d699470" />
+
 
 
 ---
