@@ -1,9 +1,10 @@
 using UnityEngine;
+
 public class FruitSpawner : MonoBehaviour
 {
     public GameObject bananaPrefab;
     public GameObject watermelonPrefab;
-    public Transform spawnPoint; 
+    public Transform spawnPoint;
 
     [Header("Frequência")]
     public float minSpawnTime = 1.5f;
@@ -14,13 +15,24 @@ public class FruitSpawner : MonoBehaviour
 
     [Header("Anti-grude")]
     public float separationRadius = 2.0f;
-    public LayerMask avoidLayers; 
+    public LayerMask avoidLayers;
 
     float timer;
 
-    void Start() { timer = Random.Range(minSpawnTime, maxSpawnTime); }
+    void Start()
+    {
+        timer = Random.Range(minSpawnTime, maxSpawnTime);
+    }
+
     void Update()
     {
+        
+        if (GameManager.Instance != null)
+        {
+            if (GameManager.Instance.IsGameEnded()) return;
+            if (GameManager.Instance.IsEndingPhase) return;
+        }
+
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
@@ -31,13 +43,20 @@ public class FruitSpawner : MonoBehaviour
 
     void TrySpawn()
     {
-        if (!bananaPrefab || !watermelonPrefab) return;
+        if (!bananaPrefab && !watermelonPrefab) return;
 
         Vector3 pos = (spawnPoint ? spawnPoint.position : transform.position);
 
+        
         if (Physics2D.OverlapCircle(pos, separationRadius, avoidLayers) != null) return;
 
-        GameObject prefab = (Random.Range(0, 2) == 0) ? bananaPrefab : watermelonPrefab;
+        
+        GameObject prefab;
+        if (bananaPrefab && watermelonPrefab)
+            prefab = (Random.Range(0, 2) == 0) ? bananaPrefab : watermelonPrefab;
+        else
+            prefab = bananaPrefab ? bananaPrefab : watermelonPrefab;
+
         var go = Instantiate(prefab, pos, Quaternion.identity);
 
         
@@ -52,5 +71,13 @@ public class FruitSpawner : MonoBehaviour
                 go.transform.localScale = new Vector3(k, k, 1f);
             }
         }
+    }
+
+    
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Vector3 p = (spawnPoint ? spawnPoint.position : transform.position);
+        Gizmos.DrawWireSphere(p, separationRadius);
     }
 }

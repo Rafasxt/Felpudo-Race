@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 public class SnailSpawner : MonoBehaviour
 {
     public GameObject snailPrefab;
@@ -11,14 +12,25 @@ public class SnailSpawner : MonoBehaviour
     public float yGround = -4.0f;
 
     [Header("Anti-grude")]
-    public float separationRadius = 2.4f; 
-    public LayerMask enemyLayer;         
+    public float separationRadius = 2.4f;
+    public LayerMask enemyLayer;
 
     float timer;
 
-    void Start() { timer = Random.Range(minSpawnTime, maxSpawnTime); }
+    void Start()
+    {
+        timer = Random.Range(minSpawnTime, maxSpawnTime);
+    }
+
     void Update()
     {
+        
+        if (GameManager.Instance != null)
+        {
+            if (GameManager.Instance.IsGameEnded()) return;
+            if (GameManager.Instance.IsEndingPhase) return;
+        }
+
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
@@ -31,8 +43,10 @@ public class SnailSpawner : MonoBehaviour
     {
         if (!snailPrefab) return;
 
-        Vector3 pos = transform.position; pos.y = yGround;
+        Vector3 pos = transform.position;
+        pos.y = yGround;
 
+        
         if (Physics2D.OverlapCircle(pos, separationRadius, enemyLayer) != null) return;
 
         Instantiate(snailPrefab, pos, Quaternion.identity);
