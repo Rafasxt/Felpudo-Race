@@ -7,24 +7,18 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Tempo total de jogo (segundos)")]
     public float gameDuration = 120f;
 
-    [Header("UI do Tempo (opcional)")]
     public Text txtTempo;
 
-    [Header("HUD (opcional)")]
     public Image[] heartImages;
     public Image[] shieldImages;
 
-    [Header("Painéis (opcionais na SampleScene)")]
-    public GameObject winPanel;   // NÃO usaremos aqui
+    public GameObject winPanel;
     public GameObject losePanel;
 
-    [Header("Cena final (nome EXATO no Build Settings)")]
-    public string finalSceneName = "EncontrotFinal"; // ajuste aqui para bater com seu asset
+    public string finalSceneName = "EncontrotFinal";
 
-    [Header("Velocidade global (banana)")]
     public float globalSpeed = 1f;
 
     private float currentTime;
@@ -66,13 +60,12 @@ public class GameManager : MonoBehaviour
         UpdateTimerUI();
 
         if (!endingPhaseStarted && currentTime <= 3f)
-            BeginEndingPhase();              // para TODOS os spawns e limpa cena
+            BeginEndingPhase();
 
         if (currentTime <= 0f)
-            Win();                           // troca para a cena final
+            Win();
     }
 
-    // ===== HUD =====
     private void UpdateTimerUI()
     {
         if (!txtTempo) return;
@@ -97,12 +90,10 @@ public class GameManager : MonoBehaviour
                 if (shieldImages[i]) shieldImages[i].enabled = i < player.currentShields;
     }
 
-    // ===== Últimos 3 segundos: parar spawns e limpar cena =====
     private void BeginEndingPhase()
     {
         endingPhaseStarted = true;
 
-        // Desabilita todos os spawners (inimigos e frutas)
         foreach (var mb in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
         {
             if (mb == null) continue;
@@ -114,7 +105,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Remove inimigos e frutas que já estão na cena
         SafeDestroyByTag("Enemy");
         SafeDestroyByTag("Fruit");
     }
@@ -126,10 +116,9 @@ public class GameManager : MonoBehaviour
             var objs = GameObject.FindGameObjectsWithTag(tag);
             foreach (var o in objs) if (o) Destroy(o);
         }
-        catch { /* se a tag não existir, ignore */ }
+        catch { }
     }
 
-    // ===== Velocidade global (banana) =====
     public void ApplyGlobalSpeedMultiplier(float multiplier, float duration)
     {
         if (speedBoostRoutine != null) StopCoroutine(speedBoostRoutine);
@@ -146,7 +135,6 @@ public class GameManager : MonoBehaviour
         speedBoostRoutine = null;
     }
 
-    // ===== Game Over =====
     public void GameOver()
     {
         if (gameEnded) return;
@@ -154,31 +142,19 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = 0f;
         if (losePanel) losePanel.SetActive(true);
-        Debug.Log("💀 GAME OVER");
     }
 
-    // ===== Vitória → carrega a cena final =====
     public void Win()
     {
         if (gameEnded) return;
         gameEnded = true;
 
-        // sempre normaliza o tempo antes de trocar de cena
         Time.timeScale = 1f;
-
-        // NÃO mostramos winPanel na SampleScene
-        // if (winPanel) winPanel.SetActive(true);
 
         if (!string.IsNullOrEmpty(finalSceneName))
         {
-            SceneManager.LoadScene(finalSceneName); // precisa estar no Build Settings
+            SceneManager.LoadScene(finalSceneName);
         }
-        else
-        {
-            Debug.LogError("[GameManager] finalSceneName vazio. Preencha no Inspector.");
-        }
-
-        Debug.Log("🏆 VITÓRIA → carregando cena final");
     }
 
     public void Restart()
@@ -187,6 +163,5 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // Helpers de acesso externo
     public float GetTimeLeft() => currentTime;
 }

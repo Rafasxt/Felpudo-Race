@@ -26,7 +26,7 @@ public class FruitSpawner : MonoBehaviour
 
     void Update()
     {
-        
+
         if (GameManager.Instance != null)
         {
             if (GameManager.Instance.IsGameEnded()) return;
@@ -47,10 +47,10 @@ public class FruitSpawner : MonoBehaviour
 
         Vector3 pos = (spawnPoint ? spawnPoint.position : transform.position);
 
-        
+
         if (Physics2D.OverlapCircle(pos, separationRadius, avoidLayers) != null) return;
 
-        
+
         GameObject prefab;
         if (bananaPrefab && watermelonPrefab)
             prefab = (Random.Range(0, 2) == 0) ? bananaPrefab : watermelonPrefab;
@@ -59,7 +59,7 @@ public class FruitSpawner : MonoBehaviour
 
         var go = Instantiate(prefab, pos, Quaternion.identity);
 
-        
+
         var sr = go.GetComponentInChildren<SpriteRenderer>();
         if (sr && sr.sprite)
         {
@@ -73,7 +73,7 @@ public class FruitSpawner : MonoBehaviour
         }
     }
 
-    
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
