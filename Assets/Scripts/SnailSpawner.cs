@@ -24,7 +24,7 @@ public class SnailSpawner : MonoBehaviour
 
     void Update()
     {
-        
+
         if (GameManager.Instance != null)
         {
             if (GameManager.Instance.IsGameEnded()) return;
@@ -46,7 +46,7 @@ public class SnailSpawner : MonoBehaviour
         Vector3 pos = transform.position;
         pos.y = yGround;
 
-        
+
         if (Physics2D.OverlapCircle(pos, separationRadius, enemyLayer) != null) return;
 
         Instantiate(snailPrefab, pos, Quaternion.identity);
