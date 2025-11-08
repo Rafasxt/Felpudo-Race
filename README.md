@@ -55,8 +55,7 @@ Consegue aguentar **2 minutos de caos e emoção**?
 
 ## 🖼️ CAPTURA DE TELA
 
-![Gameplay](https://github.com/SEU_USUARIO/FelpudosRace/assets/placeholder_main_screen.png)
-*Cena principal – Felpudo correndo contra o tempo!*
+
 
 ---
 
@@ -92,4 +91,48 @@ Difícil na prática. 😉
 ---
 
 ## ⚒️ ESTRUTURA DO PROJETO
+Assets/
+├── Scripts/
+│ ├── PlayerController2D.cs
+│ ├── PlayerHealth.cs
+│ ├── EnemySpawner.cs
+│ ├── SnailSpawner.cs
+│ ├── FruitSpawner.cs
+│ ├── GameManager.cs
+│ └── FinalMeetByAnchors.cs
+├── Scenes/
+│ ├── Menu.unity
+│ ├── SampleScene.unity
+│ └── EncontrotFinal.unity
+├── Sprites/
+└── UI/
 
+---
+
+## 🧩 ESTRUTURA DE CENAS
+
+| Cena | Descrição |
+|------|------------|
+| **Menu** | Tela inicial com o botão *Play* |
+| **SampleScene** | Fase principal de sobrevivência |
+| **EncontroFinal** | Cena final de Felpudo e Fofura |
+
+---
+
+## 👤 AUTORES
+
+**Desenvolvido por:**  
+🎨 Rafael Girardi  
+💻 Orientação: Prof. Murilo — UNEB (Jogos Digitais)  
+📆 2025
+
+> Feito com ☕ café, 🎧 música e ❤️ paixão por jogos 2D.
+
+---
+
+## 📜 LICENÇA
+
+Este projeto é de código aberto sob a **Licença MIT**.  
+Você pode usar, modificar e distribuir livremente, desde que mantenha os créditos.
+
+---
